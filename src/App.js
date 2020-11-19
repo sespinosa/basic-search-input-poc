@@ -4,29 +4,36 @@ import debounce from "lodash.debounce";
 import './App.css';
 
 const getSuggestions = debounce(
-  ({ q, limit = 10 }, cb) =>
-    axios.get('/api', { params: { q, limit } })
+  ({ q, limit = 10, API_URL }, cb) =>
+    axios.get(API_URL, { params: { q, limit } })
       .then(({ data }) => cb(null, data))
       .catch(cb)
 , 250, { trailing: true });
 
-const SeachInput = () => {
+const SeachInput = ({ API_URL, onSelect, first_name_field, last_name_field }) => {
   const [ q, setQ ] = useState("");
   const [ suggestions, setSuggestions ] = useState([]);
+  const [ selectedUser, setSelectedUser ] = useState(null);
   const inputRef = useRef();
   const inputWidth = inputRef.current?.offsetWidth;
-  console.log(inputWidth)
 
   window.inputRef = inputRef;
 
   useEffect(() => {
     if(!!q) {
-      getSuggestions({ q }, (err, results) => {
+      getSuggestions({ q, API_URL }, (err, results) => {
         if(err) return console.error('Error trying to get suggestions: ', err);
         if(results.length > 0) setSuggestions(results);
       });
     }
-  }, [q]);
+  }, [q, API_URL]);
+
+  useEffect(() => {
+    if(selectedUser && onSelect) {
+      onSelect(selectedUser)
+      setSuggestions([]);
+    };
+  }, [selectedUser, onSelect]);
 
   const _handleInput = ({ target: { value } }) => {
     setQ(value);
@@ -53,8 +60,11 @@ const SeachInput = () => {
           >
             {
               suggestions.map(s =>
-                <li key={ `${s.first_name} ${s.last_name}` }>
-                  { `${s.first_name} ${s.last_name}` }
+                <li
+                  key={ `${s.first_name} ${s.last_name}` }
+                  onClick={() => setSelectedUser(s)}
+                >
+                  { `${s[first_name_field]} ${s[last_name_field]}` }
                 </li>
               )
             }

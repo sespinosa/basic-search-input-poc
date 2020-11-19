@@ -37,7 +37,6 @@ This project is configured to build a production release with 2 files (this can 
 
  The idea is to allow configuration objects on the start, by default tries to find an element with the id `root`, you can change this behavior on index.js,
 
- ## Future
+# Production setup
 
-  - Allow configuration passed from the main scope of the webapp (outside this component).
-  - `window` object binding, so you can call this from anywhere in the page as window.searchInput (or anything you want).
+Check `./public/index.html` for reference.
