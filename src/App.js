@@ -1,25 +1,68 @@
-import logo from './logo.svg';
+import { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import debounce from "lodash.debounce";
 import './App.css';
 
-function App() {
+const getSuggestions = debounce(
+  ({ q, limit = 10 }, cb) =>
+    axios.get('/api', { params: { q, limit } })
+      .then(({ data }) => cb(null, data))
+      .catch(cb)
+, 250, { trailing: true });
+
+const SeachInput = () => {
+  const [ q, setQ ] = useState("");
+  const [ suggestions, setSuggestions ] = useState([]);
+  const inputRef = useRef();
+  const inputWidth = inputRef.current?.offsetWidth;
+  console.log(inputWidth)
+
+  window.inputRef = inputRef;
+
+  useEffect(() => {
+    if(!!q) {
+      getSuggestions({ q }, (err, results) => {
+        if(err) return console.error('Error trying to get suggestions: ', err);
+        if(results.length > 0) setSuggestions(results);
+      });
+    }
+  }, [q]);
+
+  const _handleInput = ({ target: { value } }) => {
+    setQ(value);
+  };
+
+  const extended = suggestions.length > 0 && q.length > 0;
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="search-bar">
+      <input
+        type="text"
+        value={q}
+        onChange={_handleInput}
+        className={`search-input ${extended && 'extended'}`}
+        ref={inputRef}
+      />
+      {
+        extended
+        &&
+        <section>
+          <ul
+            className='suggestion-list'
+            style={{ width: inputWidth }}
+          >
+            {
+              suggestions.map(s =>
+                <li key={ `${s.first_name} ${s.last_name}` }>
+                  { `${s.first_name} ${s.last_name}` }
+                </li>
+              )
+            }
+          </ul>
+        </section>
+      }
     </div>
   );
 }
 
-export default App;
+export default SeachInput;
