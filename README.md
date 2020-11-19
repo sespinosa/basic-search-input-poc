@@ -1,6 +1,6 @@
 # Search input POC
 
-## Install dependencies first!
+## Install dependencies first!
 
 ```bash
 yarn install
