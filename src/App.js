@@ -8,7 +8,7 @@ const getSuggestions = debounce(
     axios.get(API_URL, { params: { q, limit } })
       .then(({ data }) => cb(null, data))
       .catch(cb)
-, 250, { trailing: true });
+, 250);
 
 const SeachInput = ({ API_URL, onSelect, first_name_field, last_name_field }) => {
   const [ q, setQ ] = useState("");
@@ -30,13 +30,18 @@ const SeachInput = ({ API_URL, onSelect, first_name_field, last_name_field }) =>
 
   useEffect(() => {
     if(selectedUser && onSelect) {
-      onSelect(selectedUser)
+      onSelect(selectedUser);
       setSuggestions([]);
+      setQ(`${selectedUser[first_name_field]} ${selectedUser[last_name_field]}`)
     };
-  }, [selectedUser, onSelect]);
+  }, [selectedUser, onSelect, first_name_field, last_name_field]);
 
   const _handleInput = ({ target: { value } }) => {
     setQ(value);
+  };
+
+  const _handleClick = suggestion => () => {
+    setSelectedUser(suggestion);
   };
 
   const extended = suggestions.length > 0 && q.length > 0;
@@ -62,7 +67,7 @@ const SeachInput = ({ API_URL, onSelect, first_name_field, last_name_field }) =>
               suggestions.map(s =>
                 <li
                   key={ `${s.first_name} ${s.last_name}` }
-                  onClick={() => setSelectedUser(s)}
+                  onClick={_handleClick(s)}
                 >
                   { `${s[first_name_field]} ${s[last_name_field]}` }
                 </li>

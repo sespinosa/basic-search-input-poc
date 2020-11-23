@@ -2,8 +2,10 @@ const fs = require('fs');
 const db = JSON.parse(fs.readFileSync('./mock_api/db.json').toString());
 const app = require('express')();
 const morgan = require('morgan');
+const cors = require('cors');
 
 app.use(morgan('dev'));
+app.use(cors());
 
 app.get('/api', (req, res) => {
   const { q = "", limit = 10 } = req.query;

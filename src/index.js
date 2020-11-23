@@ -20,7 +20,12 @@ window.searchInput = ({ api_url, onSelect, first_name_field, last_name_field }, 
 const parent = document.getElementById('root');
 
 if(parent) {
-  window.searchInput({ api_url: "/api", onSelect: (obj) => console.log(obj), first_name_field: "first_name", last_name_field: "last_name" }, "root");
+  window.searchInput({ 
+    api_url: "/api",
+    onSelect: (obj) => console.log("Desde afuera!", obj),
+    first_name_field: "first_name", last_name_field: "last_name" },
+    "root"
+  );
 }
 
 reportWebVitals();
